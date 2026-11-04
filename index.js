@@ -16,4 +16,9 @@ const startServer = async () => {
   }
 };
 
-startServer();
+// Hanya jalan di lokal. Di Vercel, app diekspor lewat api/index.js
+if (!process.env.VERCEL) {
+  startServer();
+}
+
+module.exports = app;

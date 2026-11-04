@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const connectDB = require('./config/db');
 const logger = require('./middleware/logger');
 const notFound = require('./middleware/notFound');
 const errorHandler = require('./middleware/errorHandler');
@@ -14,6 +15,14 @@ const app = express();
 
 app.use(express.json());
 app.use(logger);
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    res.status(503).json({ message: 'Database tidak tersedia' });
+  }
+});
 
 app.get('/', (req, res) => res.send('Server jalan'));
 
