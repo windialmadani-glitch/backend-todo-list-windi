@@ -5,10 +5,25 @@ const ActivityLog = require('../models/ActivityLog');
 
 // 1. Ambil semua todo milik user yang sedang login
 exports.getAllTodos = catchAsync(async (req, res, next) => {
-    const todos = await Todo.find({ user: req.user._id });
+    const page = Math.max(parseInt(req.query.page) || 1, 1);
+    const limit = Math.min(Math.max(parseInt(req.query.limit) || 10, 1), 100);
+
+    const filter = { user: req.user._id };
+    if (req.query.search) filter.title = { $regex: req.query.search, $options: 'i' };
+    if (req.query.status) filter.status = req.query.status;
+    if (req.query.category) filter.category = req.query.category;
+
+    const sort = req.query.sort ? req.query.sort.split(',').join(' ') : '-createdAt';
+
+    const [todos, total] = await Promise.all([
+        Todo.find(filter).sort(sort).skip((page - 1) * limit).limit(limit),
+        Todo.countDocuments(filter)
+    ]);
+
     res.status(200).json({
         status: 'success',
         results: todos.length,
+        pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
         data: { todos }
     });
 });

@@ -51,9 +51,17 @@ module.exports = {
     },
     '/api/todos': {
       get: {
-        tags: ['Todos'], summary: 'Ambil semua todo milik user', security: secured,
-        responses: { 200: { description: 'Daftar todo' }, 401: { description: 'Belum login' } },
-      },
+  tags: ['Todos'], summary: 'Ambil semua todo milik user', security: secured,
+  parameters: [
+    { name: 'page', in: 'query', schema: { type: 'integer', default: 1 }, description: 'Nomor halaman' },
+    { name: 'limit', in: 'query', schema: { type: 'integer', default: 10 }, description: 'Jumlah data per halaman' },
+    { name: 'search', in: 'query', schema: { type: 'string' }, description: 'Cari berdasarkan judul' },
+    { name: 'status', in: 'query', schema: { type: 'string', enum: ['pending', 'in-progress', 'done'] }, description: 'Filter status' },
+    { name: 'category', in: 'query', schema: { type: 'string' }, description: 'Filter berdasarkan ID kategori' },
+    { name: 'sort', in: 'query', schema: { type: 'string', example: '-createdAt' }, description: 'Urutan, contoh: -createdAt atau title' },
+  ],
+  responses: { 200: { description: 'Daftar todo (dengan pagination)' }, 401: { description: 'Belum login' } },
+},
       post: {
         tags: ['Todos'], summary: 'Buat todo baru', security: secured,
         requestBody: { required: true, content: { 'application/json': { schema: {
@@ -152,7 +160,21 @@ module.exports.paths['/api/stats'] = {
     responses: { 200: { description: 'Data statistik' }, 401: { description: 'API Key tidak valid / tidak ada' } },
   },
 };
+module.exports.paths['/api/stats/summary'] = {
+  get: {
+    tags: ['Stats'], summary: 'Ringkasan statistik sistem (butuh API Key)',
+    security: [{ apiKeyAuth: [] }],
+    responses: { 200: { description: 'Data statistik' }, 401: { description: 'API Key tidak valid / tidak ada' } },
+  },
+};
 
+module.exports.paths['/api/external/summary'] = {
+  get: {
+    tags: ['External'], summary: 'Ringkasan untuk akses eksternal (butuh API Key)',
+    security: [{ apiKeyAuth: [] }],
+    responses: { 200: { description: 'Data ringkasan' }, 401: { description: 'API Key tidak valid / tidak ada' } },
+  },
+};
 
 module.exports.paths['/api/activity-logs'] = {
   get: {
