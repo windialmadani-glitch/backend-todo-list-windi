@@ -9,6 +9,7 @@ const todoRoutes = require('./routes/todoRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const activitylogRouter = require('./routes/activitylogRoutes');
 const statsRouter = require('./routes/statsRoutes');
+const externalRouter = require('./routes/externalRoutes');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./docs/swagger');
 const app = express();
@@ -39,6 +40,7 @@ app.use('/api/todos', todoRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/activity-logs', activitylogRouter);
 app.use('/api/stats', statsRouter);
+app.use('/api/external', externalRouter);
 app.use(notFound);
 app.use(errorHandler);
 

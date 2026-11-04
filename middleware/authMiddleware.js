@@ -22,7 +22,16 @@ exports.protect = catchAsync(async (req, res, next) => {
   }
 
   // 2. Verifikasi token menggunakan JWT_SECRET
-  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  let decoded;
+try {
+  decoded = jwt.verify(token, process.env.JWT_SECRET);
+} catch (err) {
+  const message =
+    err.name === 'TokenExpiredError'
+      ? 'Token sudah kedaluwarsa, silakan login lagi.'
+      : 'Token tidak valid, silakan login lagi.';
+  return next(new AppError(message, 401));
+}
 
   // 3. Cek apakah user pemilik token tersebut masih ada di database
   const currentUser = await User.findById(decoded.id);

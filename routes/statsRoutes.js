@@ -5,5 +5,6 @@ const apiKeyMiddleware = require('../middleware/apiKeyMiddleware');
 
 // Endpoint statistik dilindungi API Key (machine-to-machine)
 router.get('/', apiKeyMiddleware, statsController.getSystemStats);
+router.get('/summary', apiKeyMiddleware, statsController.getSystemStats);
 
 module.exports = router;
