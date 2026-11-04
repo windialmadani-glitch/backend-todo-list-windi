@@ -17,11 +17,13 @@ exports.getAllTodos = catchAsync(async (req, res, next) => {
 exports.createTodo = catchAsync(async (req, res, next) => {
     req.body.user = req.user._id; // Otomatis set user pemilik todo dari token login
     const newTodo = await Todo.create(req.body);
-    await ActivityLog.create({
-    user: req.user._id,
-    action: 'CREATE_TODO',
-    description: `Membuat todo: ${newTodo.title}`
-  });
+   await ActivityLog.create({
+  user: req.user._id,
+  action: 'CREATE_TODO',
+  todo: newTodo._id,
+  description: `Membuat todo: ${newTodo.title}`,
+  snapshot: { title: newTodo.title, description: newTodo.description, status: newTodo.status, category: newTodo.category }
+});
     res.status(201).json({
         status: 'success',
         data: { todo: newTodo }
@@ -60,10 +62,12 @@ exports.updateTodo = catchAsync(async (req, res, next) => {
         runValidators: true
     });
 await ActivityLog.create({
-    user: req.user._id,
-    action: 'UPDATE_TODO',
-    description: `Mengubah todo: ${todo.title}`
-  });
+  user: req.user._id,
+  action: 'UPDATE_TODO',
+  todo: todo._id,
+  description: `Mengubah todo: ${todo.title}`,
+  snapshot: { title: todo.title, description: todo.description, status: todo.status, category: todo.category }
+});
     res.status(200).json({
         status: 'success',
         data: { todo }
@@ -83,10 +87,12 @@ exports.deleteTodo = catchAsync(async (req, res, next) => {
 
     await Todo.findByIdAndDelete(req.params.id);
 await ActivityLog.create({
-    user: req.user._id,
-    action: 'DELETE_TODO',
-    description: `Menghapus todo: ${todo.title}`
-  });
+  user: req.user._id,
+  action: 'DELETE_TODO',
+  todo: todo._id,
+  description: `Menghapus todo: ${todo.title}`,
+  snapshot: { title: todo.title, description: todo.description, status: todo.status, category: todo.category }
+});
     res.status(200).json({
         status: 'success',
         message: 'Todo berhasil dihapus'

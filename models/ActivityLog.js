@@ -6,6 +6,8 @@ const activityLogSchema = new mongoose.Schema(
     action: { type: String, required: true },
     todo: { type: mongoose.Schema.Types.ObjectId, ref: 'Todo' },
     description: { type: String, default: '' },
+    category: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' },
+    snapshot: { type: Object, default: {} },
   },
   { timestamps: true }
 );
