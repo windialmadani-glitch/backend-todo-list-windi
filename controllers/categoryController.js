@@ -2,6 +2,7 @@ const Category = require('../models/Category');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/AppError');
 const ActivityLog = require('../models/ActivityLog');
+const Todo = require('../models/Todo');
 
 exports.getAllCategories = catchAsync(async (req, res, next) => {
     const categories = await Category.find({ user: req.user._id });
@@ -67,6 +68,7 @@ exports.deleteCategory = catchAsync(async (req, res, next) => {
         return next(new AppError('Anda tidak memiliki izin untuk menghapus kategori ini', 403));
     }
     await Category.findByIdAndDelete(req.params.id);
+    await Todo.updateMany({ category: category._id }, { $unset: { category: '' } });
     await ActivityLog.create({
   user: req.user._id,
   action: 'DELETE_CATEGORY',
