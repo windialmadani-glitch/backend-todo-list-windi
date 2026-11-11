@@ -15,6 +15,8 @@ exports.getAllCategories = catchAsync(async (req, res, next) => {
 
 exports.createCategory = catchAsync(async (req, res, next) => {
     req.body.user = req.user._id;
+    req.body.created_by = req.user._id;
+    req.body.updated_by = req.user._id;
     const newCategory = await Category.create(req.body);
     await ActivityLog.create({
   user: req.user._id,
@@ -48,6 +50,8 @@ exports.updateCategory = catchAsync(async (req, res, next) => {
     if (category.user.toString() !== req.user._id.toString()) {
         return next(new AppError('Anda tidak memiliki izin untuk mengubah kategori ini', 403));
     }
+    req.body.updated_by = req.user._id;
+    delete req.body.created_by;
     category = await Category.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
     await ActivityLog.create({
   user: req.user._id,

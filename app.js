@@ -10,7 +10,6 @@ const categoryRoutes = require('./routes/categoryRoutes');
 const activitylogRouter = require('./routes/activitylogRoutes');
 const statsRouter = require('./routes/statsRoutes');
 const externalRouter = require('./routes/externalRoutes');
-const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./docs/swagger');
 const app = express();
 
@@ -27,13 +26,35 @@ app.use(async (req, res, next) => {
 
 app.get('/', (req, res) => res.send('Server jalan'));
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
-  customCssUrl: 'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.0.0/swagger-ui.min.css',
-  customJs: [
-    'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.0.0/swagger-ui-bundle.js',
-    'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.0.0/swagger-ui-standalone-preset.js',
-  ],
-}));
+const SWAGGER_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.0.0';
+
+app.get('/api-docs/swagger.json', (req, res) => res.json(swaggerDocument));
+
+app.get(['/api-docs', '/api-docs/'], (req, res) => {
+  res.type('html').send(`<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Todo List API</title>
+  <link rel="stylesheet" href="${SWAGGER_CDN}/swagger-ui.min.css" />
+</head>
+<body>
+  <div id="swagger-ui"></div>
+  <script src="${SWAGGER_CDN}/swagger-ui-bundle.js"></script>
+  <script src="${SWAGGER_CDN}/swagger-ui-standalone-preset.js"></script>
+  <script>
+    window.onload = function () {
+      window.ui = SwaggerUIBundle({
+        url: '/api-docs/swagger.json',
+        dom_id: '#swagger-ui',
+        presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
+        layout: 'StandaloneLayout'
+      });
+    };
+  </script>
+</body>
+</html>`);
+});
 
 app.use('/api/auth', authRoutes);
 app.use('/api/todos', todoRoutes);

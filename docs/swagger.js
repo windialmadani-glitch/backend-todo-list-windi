@@ -72,6 +72,7 @@ module.exports = {
             status: { type: 'string', enum: ['pending', 'in-progress', 'done'] },
             dueDate: { type: 'string', format: 'date-time' },
             category: { type: 'string', description: 'ID kategori (opsional)', example: '6aeac2b4ce05fb4d06a85826' },
+            archived: { type: 'boolean', description: 'Status arsip (default false)', example: false },
           } } } } },
         responses: { 201: { description: 'Todo dibuat' }, 400: { description: 'Title kosong' }, 401: { description: 'Belum login' } },
       },
@@ -90,6 +91,7 @@ module.exports = {
             description: { type: 'string' },
             status: { type: 'string', enum: ['pending', 'in-progress', 'done'] },
             category: { type: 'string', description: 'ID kategori (opsional)' },
+            archived: { type: 'boolean', description: 'Status arsip todo' },
           } } } } },
         responses: { 200: { description: 'Todo diubah' }, 403: { description: 'Bukan milik user' }, 404: { description: 'Tidak ditemukan' } },
       },
@@ -143,9 +145,12 @@ module.exports.paths['/api/categories/{id}'] = {
   },
   put: {
     tags: ['Categories'], summary: 'Ubah kategori', security: secured, parameters: [catParam],
-    requestBody: { content: { 'application/json': { schema: {
+        requestBody: { content: { 'application/json': { schema: {
       type: 'object',
-      properties: { name: { type: 'string', example: 'Kuliah (baru)' } },
+      properties: {
+        name: { type: 'string', example: 'Kuliah (baru)' },
+        archived: { type: 'boolean', description: 'Status arsip kategori' },
+      },
     } } } },
     responses: { 200: { description: 'Kategori diubah' }, 403: { description: 'Bukan milik user' }, 404: { description: 'Tidak ditemukan' } },
   },

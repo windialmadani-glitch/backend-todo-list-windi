@@ -31,6 +31,8 @@ exports.getAllTodos = catchAsync(async (req, res, next) => {
 // 2. Buat todo baru
 exports.createTodo = catchAsync(async (req, res, next) => {
     req.body.user = req.user._id; // Otomatis set user pemilik todo dari token login
+    req.body.created_by = req.user._id;
+    req.body.updated_by = req.user._id;
     const newTodo = await Todo.create(req.body);
    await ActivityLog.create({
   user: req.user._id,
@@ -71,7 +73,8 @@ exports.updateTodo = catchAsync(async (req, res, next) => {
     if (todo.user.toString() !== req.user._id.toString()) {
         return next(new AppError('Anda tidak memiliki izin untuk mengubah todo ini', 403));
     }
-
+    req.body.updated_by = req.user._id;
+    delete req.body.created_by;
     todo = await Todo.findByIdAndUpdate(req.params.id, req.body, {
         new: true,
         runValidators: true

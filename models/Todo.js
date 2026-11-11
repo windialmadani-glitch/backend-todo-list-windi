@@ -12,6 +12,9 @@ const todoSchema = new mongoose.Schema(
     dueDate: { type: Date },
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     category: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' },
+    created_by: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    updated_by: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    archived: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
